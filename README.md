@@ -8,4 +8,4 @@
 * brew install pyenv
 * pyenv install 3.10
 * pyenv global 3.10
-* 
+* pyenv -m venv venv # create enviroment project
