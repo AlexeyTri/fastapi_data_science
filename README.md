@@ -4,3 +4,5 @@
 
 # PART_1
 ## chapter_1 Python Development Environment Setup
+## chapter_2 Python programming Specificities
+## chapter_3 Developming A RESTful API with FastAPI
