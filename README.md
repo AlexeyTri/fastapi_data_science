@@ -7,6 +7,7 @@
 <<<<<<< HEAD
 ## chapter_2 Python programming Specificities
 ## chapter_3 Developming A RESTful API with FastAPI
+## chapter_4 Managing Pydantic DataModels in FastAPI
 =======
 * brew install PACKEGES
 * brew install pyenv
