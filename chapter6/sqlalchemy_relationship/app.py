@@ -4,10 +4,14 @@ from collections.abc import Sequence
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from chapter06.sqlalchemy import schemas
-from chapter06.sqlalchemy.database import create_all_tables, get_async_session
-from chapter06.sqlalchemy.models import Post
+from chapter06.sqlalchemy_relationship import schemas
+from chapter06.sqlalchemy_relationship.database import (
+    create_all_tables,
+    get_async_session,
+)
+from chapter06.sqlalchemy_relationship.models import Comment, Post
 
 
 @contextlib.asynccontextmanager
@@ -30,7 +34,9 @@ async def pagination(
 async def get_post_or_404(
     id: int, session: AsyncSession = Depends(get_async_session)
 ) -> Post:
-    select_query = select(Post).where(Post.id == id)
+    select_query = (
+        select(Post).options(selectinload(Post.comments)).where(Post.id == id)
+    )
     result = await session.execute(select_query)
     post = result.scalar_one_or_none()
 
@@ -46,7 +52,9 @@ async def list_posts(
     session: AsyncSession = Depends(get_async_session),
 ) -> Sequence[Post]:
     skip, limit = pagination
-    select_query = select(Post).offset(skip).limit(limit)
+    select_query = (
+        select(Post).options(selectinload(Post.comments)).offset(skip).limit(limit)
+    )
     result = await session.execute(select_query)
 
     return result.scalars().all()
@@ -63,11 +71,12 @@ async def get_post(post: Post = Depends(get_post_or_404)) -> Post:
 async def create_post(
     post_create: schemas.PostCreate, session: AsyncSession = Depends(get_async_session)
 ) -> Post:
-    post = Post(**post_create.dict())
+    post = Post(**post_create.dict(), comments=[])
     session.add(post)
     await session.commit()
 
     return post
+
 
 @app.patch("/posts/{id}", response_model=schemas.PostRead)
 async def update_post(
@@ -93,3 +102,19 @@ async def delete_post(
     await session.delete(post)
     await session.commit()
 
+
+@app.post(
+    "/posts/{id}/comments",
+    response_model=schemas.CommentRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_comment(
+    comment_create: schemas.CommentCreate,
+    post: Post = Depends(get_post_or_404),
+    session: AsyncSession = Depends(get_async_session),
+) -> Comment:
+    comment = Comment(**comment_create.dict(), post=post)
+    session.add(comment)
+    await session.commit()
+
+    return comment
