@@ -1,9 +1,7 @@
 import typing
 from logging.config import fileConfig
-
 from alembic import context
 from sqlalchemy import engine_from_config, pool
-
 from chapter06.sqlalchemy_relationship.models import Base
 
 # this is the Alembic Config object, which provides
