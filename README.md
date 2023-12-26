@@ -9,6 +9,8 @@
 ## chapter_3 Developming A RESTful API with FastAPI
 ## chapter_4 Managing Pydantic DataModels in FastAPI
 ## chapter_5 DEPENDENCY INJECTION
+## chapter_6 Database model: SQL (sqlalchemy, alembic) and NoSQL (MongoDB)
+## chapter_7 Managing Authentication and Security in FastAPI
 =======
 * brew install PACKEGES
 * brew install pyenv
